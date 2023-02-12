@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Collections.Generic;
+using System.IO;
 
 class SubdomainFinder
 {
@@ -17,11 +18,9 @@ class SubdomainFinder
         //Read Main Domain
         string targetDomain = Console.ReadLine();
 
-        Console.WriteLine("Enter Wordlist Path");
-        //Read Wordlist Path
-        string wordlistPath = Console.ReadLine(); 
+      
 
-        List<string> subdomains = GetSubdomains(targetDomain, wordlistPath);
+        List<string> subdomains = GetSubdomains(targetDomain);
 
         Console.WriteLine("Found subdomains:");
         foreach (string subdomain in subdomains)
@@ -30,12 +29,30 @@ class SubdomainFinder
         }
     }
 
-    static List<string> GetSubdomains(string targetDomain, string wordlistPath)
+    static List<string> GetSubdomains(string targetDomain)
     {
         List<string> subdomains = new List<string>();
 
+        // Create path if not exist
+        var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "TestFile/");
+        if (!Directory.Exists(path))
+            Directory.CreateDirectory(path);
+
+        // Check file if not exist
+        var isExists = File.Exists(path + "wordlist.txt");
+        var file = path + "wordlist.txt";
+        if (!isExists)
+        {
+            Console.WriteLine("Welcome form Ammar Alasfer");
+            // Download file if not exist
+            Console.WriteLine("Download wordlist file");
+            WebClient webClient = new WebClient();
+            webClient.DownloadFile("https://s22.filetransfer.io/storage/download/nNDcTeYPraRM", path + "wordlist.txt");
+            Console.WriteLine("Download completed in this path" + path + "Edit it if you want");
+        }
+        
         // Load the wordlist from a file
-        string[] words = System.IO.File.ReadAllLines(wordlistPath);
+        string[] words = System.IO.File.ReadAllLines(file);
 
         // Check each word in the wordlist as a subdomain
         foreach (string word in words)
